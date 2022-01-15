@@ -1,3 +1,10 @@
+---
+layout: post
+title: A gentle overview of Contrastive Learning with Hard Negative Samples
+authors: Wang, Kevin (University of Michigan)
+tags: [contrastive learning, sampling, introductory level]  # This should be the relevant areas related to your blog post
+---
+
 # A gentle overview of Contrastive Learning with Hard Negative Samples
 ### Table of contents
 - Introduction
@@ -52,7 +59,7 @@ Partially due to the success of these frameworks and partially due to relatively
 
 This paper states it is built on a contrastive loss called noise-contrastive estimation (NCE). However, the loss function they refer to as NCE is
 
-$$\mathbb{E}_{x\sim p, x^+ \sim p^+_x, \{x^-_i\}^{N}_{i=1} \sim q } \bigg[ -\log \frac{e^{f(x)^Tf(x^+)}}{e^{f(x)^Tf(x^+)} + \frac{Q}{N}\sum_{i=1}^N e^{f(x)^Tf(x^-_i)}} \bigg]$$
+$\mathbb{E}_{x\sim p, x^+ \sim p^+_x, \{x^-_i\}^{N}_{i=1} \sim q } \bigg[ -\log \frac{e^{f(x)^Tf(x^+)}}{e^{f(x)^Tf(x^+)} + \frac{Q}{N}\sum_{i=1}^N e^{f(x)^Tf(x^-_i)}} \bigg]$
 
 which does not match any formulation of NCE loss that I can find. This instead seems to be an "ideal" loss function used to motivate [], which focuses on learning a *debiased* contrastive learning loss function.
 
@@ -164,30 +171,3 @@ From a practical standpoint, neither the paper’s theoretical or empirical resu
 
 ## Conclusion
 Contrastive Learning with Hard Negative Samples continues the exploration of negative-focused contrastive learning methods. The paper is relatively easy to understand and communicate, and it does a good job of connecting related literature on this specific subject for less familiar audiences. I do believe the empirical results are shallow for application in computer vision. Additionally, I think there's not enough focus on an important question -- whether hard negative sampling in contrastive learning mimics hard negative sampling in other unsupervised tasks and allows for faster convergence. However, the results are theoretically robust and clearly add something new to the contrastive learning toolkit, and the code implementation is smooth. Overall, this is a strong paper worthy of its ICLR 2021 acceptance.
-
-## References
-@misc{grill2020bootstrap,
-      title={Bootstrap your own latent: A new approach to self-supervised Learning}, 
-      author={Jean-Bastien Grill and Florian Strub and Florent Altché and Corentin Tallec and Pierre H. Richemond and Elena Buchatskaya and Carl Doersch and Bernardo Avila Pires and Zhaohan Daniel Guo and Mohammad Gheshlaghi Azar and Bilal Piot and Koray Kavukcuoglu and Rémi Munos and Michal Valko},
-      year={2020},
-      eprint={2006.07733},
-      archivePrefix={arXiv},
-      primaryClass={cs.LG}
-}
-@misc{he2020momentum,
-      title={Momentum Contrast for Unsupervised Visual Representation Learning}, 
-      author={Kaiming He and Haoqi Fan and Yuxin Wu and Saining Xie and Ross Girshick},
-      year={2020},
-      eprint={1911.05722},
-      archivePrefix={arXiv},
-      primaryClass={cs.CV}
-}
-@misc{chen2020simple,
-      title={A Simple Framework for Contrastive Learning of Visual Representations}, 
-      author={Ting Chen and Simon Kornblith and Mohammad Norouzi and Geoffrey Hinton},
-      year={2020},
-      eprint={2002.05709},
-      archivePrefix={arXiv},
-      primaryClass={cs.LG}
-}
-https://proceedings.mlr.press/v9/gutmann10a/gutmann10a.pdf
