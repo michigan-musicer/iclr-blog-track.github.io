@@ -25,17 +25,18 @@ This blog post walks through Contrastive Learning with Hard Negative Samples fro
 Contrastive learning is a method to learn representations (also known as embeddings) of datapoints such that two "similar” datapoints have similar representations and two “dissimilar” datapoints have dissimilar representations. The end result of learning contrastive representations is an embedding function that returns a representaiton of a given datapoint in the learned embedding space. It’s typical for an iteration of contrastive learning to consider an *anchor* datapoint (the current datapoint to compare to) and then decrease the distance to *positive* (similar) datapoints and increase the distance to *negative* (dissimilar) datapoints.
 
 Traditionally, contrastive learning is treated as a self-supervised problem: a flavor of unsupervised learning where labels are assigned without outside information to help categorize information for learning. There are other ways to use contrastive learning (in particular, supervised methods) that we will not get to in this post.
+
 #### A common (misleading) analogy for contrastive learning
+
 A common way to explain contrastive learning is to essentially recast the process as a classification problem. This post will use this analogy and then explain it is a bad analogy.
 
 Consider learning contrastive representations on a dataset of cats and dogs. One could imagine that cats should be similar to cats and dogs should be similar to dogs. Using this logic, consider a batch of cats and dogs from our dataset. For each iteration through the batch, if the current anchor is a cat, then we decrease the distance of the anchor's representation to representations of other cats in the batch, and we increase the increase the distance of the anchor's representation to representations of dogs in the batch. Vice versa if the anchor is a dog.
-~~Pictures here~~
-~~. Then you can adjust the embedding space so that the negative is further from the anchor and the positive is closer to the anchor. ~~
 
 Many papers – including the one analyzed in this post – use this misleading example or something similar to it because it’s easy to think about and it makes sense. It has its merits as an explanatory tool, but contrastive learning does not have the same sense of class hierarchy as a human observer. Without providing labels, it's not possible to guarantee that a contrastive learning framework will learn the "correct" embedding space on its own.
-It is more accurate to think of datapoints as just that -- points in a space. Using analogies like this assigns more ability and agency to contrastive learning frameworks than what's really there.
+It is more accurate to think of datapoints as just that – points in a space. Using analogies like this assigns more ability and agency to contrastive learning frameworks than what's really there.
 
 #### Contrastive learning frameworks
+
 Contrastive learning owes much of its recent success to the same innovations that sparked the deep learning revolution: big data and greater computational resources. Modern contrastive learning frameworks rely on these things 
 
 The first version of MoCo (Momemtum Contrast for Unsupervised Visual Learning) came out in November 2019. MoCo maintains a directory of raw images and distorted images. For a given anchor image, its distortion is a positive, and all other images in the dictionary are negatives.
@@ -45,11 +46,15 @@ The first version of SimCLR (Simple Contrastive Learning Representations) came o
 With regards to unsupervised pretraining, MoCo and SimCLR both significantly outperformed preexisting methods. Additionally, the representations learned by both frameworks end up being useful for downstream tasks (that is to say, using the contrastive learning representations instead of the raw data often boosts model performance on that model's own task). Because they closed the gap so much, both of the papers for these frameworks have thousands of citations and are widely credited for sparking a surge in research into and application of contrastive learning. The frameworks themselves are not the focus of this post, but any discussion of contrastive learning and its impact in the last few years will include MoCo and SimCLR. 
 
 #### Contrastive learning is not the only way forward
+
 There are a number of semi-supervised and unsupervised techinques other than contrastive learning gaining traction in the machine learning community today. Bootstrap Your Own Latents (BYOL) beats traditional contrastive learning methods on  by employing a similarity measure instead of a contrastive measure including positives and negatives. Additionally, late in 2021 within the field of computer vision, masked autoencoder frameworks (MAE) caused a stir for showing higher performance than supervised frameworks on certain tasks. Contrastive learning is dramatically more powerful for representation learning than more traditional unsupervised techniques like clusteirng or PCA, but it is certainly not the only option out there.
+
 ## Paper motivation
+
 Contrastive Learning with Hard Negative Samples proposes a new contrastive learning method that focuses on sampling *hard negatives* – that is, the negative examples that are closest to the anchor in the embedding space. The primary benefit of this is faster convergence, as the harder negatives give more information than negatives already far away from the anchor. Intuitively, knowing that an anchor $P$ and a nearby negative $N_1$ should be far apart is more informative than knowing $P$ and a faraway negative $N_2$ should be far apart, because $P$ and $N_2$ are already far apart.
 
 #### Current literature does not focus much on finding "good" negatives
+
 In the contrastive learning literature, negatives usually don't receive much attention. MoCo and SimCLR simply assume that all other examples in a batch not related to the anchor (i.e. not a noised version of the anchor, not an augmentation of the anchor) are negative, and the frameworks are still very effective with this assumption. 
 
 Partially due to the success of these frameworks and partially due to relatively limited experiments with known ways to sample negatives, it's possible to argue that searching for negative pairs doesn’t raise model performance enough to be worth spending time on. This paper points to work in data mining and metric learning to suggest otherwise. Negative sampling in data mining and metric learning has been shown to reduce training times because the harder the negative is, the more quickly an algorithm separates the representations of different types of datapoints from each other. Contrastive learning, the paper claims, is another unsupervised process which may benefit from the same idea.
@@ -163,14 +168,23 @@ The new loss function proposed in this paper outperforms both the base SimCLR lo
 Negatives end up being more dissimilar to the anchor than SimCLR -- which is desired -- but positives are less similar. The paper shows that the overlap between positive and negative histograms is reduced, which implies that it is easier to distinguish between the two for a given anchor point than with SimCLR. So overall, this aspect of the framework's performance is improved. 
 
 ## Constructive criticism
+
 #### Misleading expalantory example
+
 As mentioned before, this paper falls into the same pitfall that a lot of other papers fall into and uses a motivating example implying classification with a specified class hierarchy. Again, contrastive learning isn't really capable of this.
+
 #### SimCLR test not up to date
+
 The paper uses the original SimCLR framework; there is now a SimCLRv2 with improved performance over the original, and it would be more fair to compare performance to that updated version. Using the old version is understandable because SimCLRv2 was published relatively close to the ICLR 2021 deadline. However, it would improve the paper's credibility to have results on the new SimCLRv2.  
+
 #### Weak computer vision tests
+
 From the perspective of a computer vision practitioner, the datasets used to evaluate the novel loss function’s performance on computer vision tasks is too small, and there is no testing of the contrastive embeddings on complex downstream tasks. (Nowadays, image classification is often too simple to serve as a good litmus test by itself.) Seeing as to how contrastive learning is most prominently used in computer vision settings, this reduces the practical credibility of the results by a fair amount. The paper would have higher credibility if it had run more rigorous tests on more difficult downstream tasks, such as image segmentation or object detection, to better establish the legitimacy of their results. 
+
 #### Very little focus on time to convergence
+
 From a practical standpoint, neither the paper’s theoretical or empirical results focus that much on the reduced training time. This was one of the main motivations for the paper, so it is odd that so little analysis is dedicated to it. Without a justification in regards to time spent training or number of iterations to converge, there is little convincing reason to adopt it over simpler existing contrastive loss functions.
 
 ## Conclusion
+
 Contrastive Learning with Hard Negative Samples continues the exploration of negative-focused contrastive learning methods. The paper is relatively easy to understand and communicate, and it does a good job of connecting related literature on this specific subject for less familiar audiences. I do believe the empirical results are shallow for application in computer vision. Additionally, I think there's not enough focus on an important question -- whether hard negative sampling in contrastive learning mimics hard negative sampling in other unsupervised tasks and allows for faster convergence. However, the results are theoretically robust and clearly add something new to the contrastive learning toolkit, and the code implementation is smooth. Overall, this is a strong paper worthy of its ICLR 2021 acceptance.
